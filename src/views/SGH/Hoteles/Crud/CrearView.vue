@@ -172,7 +172,7 @@ export default {
       return axios
         .get(`http://localhost:8000/api/hoteles/${codigo}`)
         .then((response) => {
-          return response.data.exists; // Assuming the API returns an object with "exists" field
+          return response.data; // Assuming the API returns an object with "exists" field
         });
     },
 
@@ -191,13 +191,6 @@ export default {
       } else if (this.estado === undefined || this.estado === null) {
         show_alerta("Seleccione el estado", "warning", "estado");
       } else {
-        var hotelExists = this.validarHotelExistente(this.codigo);
-
-        if (hotelExists) {
-          show_alerta("El código de hotel ya existe", "danger", "codigo");
-          return;
-        }
-
         var parametros = {
           nombre: this.nombre,
           codnifrfc: this.codigo,
