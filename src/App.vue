@@ -22,7 +22,7 @@
             <a class="nav-link" href="/about">Acerca</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Nosotros</a>
+            <a class="nav-link" href="/hotelesEdit">Nosotros</a>
           </li>
           <li class="nav-item dropdown">
             <a

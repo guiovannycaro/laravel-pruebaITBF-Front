@@ -34,16 +34,13 @@ const routes = [{
             import ( /* webpackChunkName: "about" */ '../views/SGH/Hoteles/Crud/CrearView.vue')
     },
     {
-        path: '/hotelesEditar',
-        name: 'hotelesEditar',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
+        path: '/hotelesEdit/:idhotel', // Use dynamic segment for idhotel
+        name: 'hotelesEdit',
         component: () =>
-            import ( /* webpackChunkName: "about" */ '../views/SGH/Hoteles/Crud/EditarView.vue')
+            import ( /* webpackChunkName: "hotelesEdit" */ '../views/SGH/Hoteles/Crud/EditarView.vue'),
     },
     {
-        path: '/hotelesDetalle',
+        path: '/hotelesDetalle/:idhotel',
         name: 'hotelesDetalle',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route

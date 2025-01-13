@@ -74,10 +74,10 @@ export function enviarSolicitud(metodo, parametros, url, mensaje) {
 }
 
 
-export function crearSolicitud(url, parametros, mensaje) {
+export function actSolicitud(url, parametros, mensaje) {
     console.log('llega: ' + url);
     console.log('llega a : ' + JSON.stringify(parametros, null, 2));
-    axios.post(url, parametros) // Corrección aquí
+    axios.put(url, parametros) // Corrección aquí
         .then(function(respuesta) {
             var status = respuesta.data.status; // Asumiendo que 'status' está en la raíz de la respuesta
             console.log(status);

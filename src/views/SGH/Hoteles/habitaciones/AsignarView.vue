@@ -100,6 +100,8 @@ export default {
       acomodaciones: [],
       hoteles: [],
       tipoacomodaciones: [],
+      contHabitacion: "",
+      numhabitaciones: "",
       hotel: 0,
       tipoacomodacion: 0,
       acomodacion: 0,
@@ -112,72 +114,134 @@ export default {
     this.obtTipoAcomodacion();
   },
   methods: {
-    obtHoteles() {
-      axios.get("http://localhost:8000/api/hoteles").then((response) => {
+    // Obtener la lista de hoteles
+    async obtHoteles() {
+      try {
+        const response = await axios.get("http://localhost:8000/api/hoteles");
         this.hoteles = response.data;
-      });
+      } catch (error) {
+        console.error("Error al obtener los hoteles:", error);
+      }
     },
 
-    obtAcomodacion() {
-      axios.get("http://localhost:8000/api/acomodacion").then((response) => {
+    // Obtener la lista de acomodaciones
+    async obtAcomodacion() {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/acomodacion"
+        );
         this.acomodaciones = response.data;
-      });
+      } catch (error) {
+        console.error("Error al obtener las acomodaciones:", error);
+      }
     },
 
-    obtTipoAcomodacion() {
-      axios.get("http://localhost:8000/api/tipohabitacion").then((response) => {
+    // Obtener la lista de tipos de acomodaciones
+    async obtTipoAcomodacion() {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/tipohabitacion"
+        );
         this.tipoacomodaciones = response.data;
-      });
+      } catch (error) {
+        console.error("Error al obtener los tipos de acomodaciones:", error);
+      }
     },
 
-    enviarDatos(event) {
+    // Obtener la cantidad de habitaciones disponibles para un hotel
+    async contHabitaciones(idhotel) {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/hoteles/BoscarById/${idhotel}`
+        );
+        const datos = response.data[0];
+        this.contHabitacion = datos.numhabitaciones;
+        return datos.numhabitaciones;
+      } catch (error) {
+        console.error("Error al obtener la cantidad de habitaciones:", error);
+        return null;
+      }
+    },
+
+    // Obtener el conteo de acomodaciones por ID
+    async cantidadtHabit(ids) {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/acomotiphabitacionhotel/conteoAcomodacion/${ids}`
+        );
+        if (response.data && response.data[0]) {
+          const habitacion = response.data[0];
+          this.numhabitaciones = habitacion.cantidad;
+          return habitacion.cantidad;
+        } else {
+          console.warn("No se encontraron datos para el ID proporcionado.");
+          return null;
+        }
+      } catch (error) {
+        console.error("Error al obtener las habitaciones:", error);
+        return null;
+      }
+    },
+
+    // Enviar los datos al servidor
+    async enviarDatos(event) {
       event.preventDefault();
 
-      // Validate that all required fields are selected
+      // Validar que todos los campos requeridos estén seleccionados
       if (!this.hotel || !this.tipoacomodacion || !this.acomodacion) {
-        alert("Debe seleccionar todas las opciones");
+        show_alerta("Debe seleccionar todas las opciones");
         return;
       }
 
-      // Validate the relationship between tipoacomodacion and acomodacion
-      if (this.tipoacomodacion === 1) {
-        // If type is "Estándar", accommodation must be "Sencilla" or "Doble"
-        if (![1, 2].includes(this.acomodacion)) {
-          alert(
-            "Si el tipo de habitación es Estándar: la acomodación debe ser Sencilla o Doble."
-          );
-          return;
-        }
-      } else if (this.tipoacomodacion === 2) {
-        // If type is "Junior", accommodation must be "Triple" or "Cuádruple"
-        if (![3, 4].includes(this.acomodacion)) {
-          alert(
-            "Si el tipo de habitación es Junior: la acomodación debe ser Triple o Cuádruple."
-          );
-          return;
-        }
-      } else if (this.tipoacomodacion === 3) {
-        // If type is "Suite", accommodation must be "Sencilla", "Doble", or "Triple"
-        if (![1, 2, 3].includes(this.acomodacion)) {
-          alert(
-            "Si el tipo de habitación es Suite: la acomodación debe ser Sencilla, Doble o Triple."
-          );
-          return;
-        }
+      // Validar la relación entre tipo de acomodación y acomodación
+      if (this.tipoacomodacion === 1 && ![1, 2].includes(this.acomodacion)) {
+        show_alerta(
+          "Si el tipo de habitación es Estándar: la acomodación debe ser Sencilla o Doble."
+        );
+        return;
+      }
+      if (this.tipoacomodacion === 2 && ![3, 4].includes(this.acomodacion)) {
+        show_alerta(
+          "Si el tipo de habitación es Junior: la acomodación debe ser Triple o Cuádruple."
+        );
+        return;
+      }
+      if (this.tipoacomodacion === 3 && ![1, 2, 3].includes(this.acomodacion)) {
+        show_alerta(
+          "Si el tipo de habitación es Suite: la acomodación debe ser Sencilla, Doble o Triple."
+        );
+        return;
       }
 
-      // If all conditions are met, send the data
+      // Obtener y validar conteos antes de enviar
+      const conteoHabitaciones = await this.contHabitaciones(this.hotel);
+      if (conteoHabitaciones === null) {
+        show_alerta("Error al obtener la cantidad de habitaciones.");
+        return;
+      }
+
+      const numHabitaciones = await this.cantidadtHabit(this.hotel);
+      if (numHabitaciones === null) {
+        show_alerta("Error al obtener el conteo de acomodaciones.");
+        return;
+      }
+
       const parametros = {
         idhotel: this.hotel,
         idacomodacion: this.tipoacomodacion,
         idtipoacomodacion: this.acomodacion,
       };
 
-      console.log("Datos a enviar:", parametros);
-      console.log(this.url, parametros, "Hotel Guardado");
-
-      // Assuming enviarSolicitud handles making the HTTP request
-      enviarSolicitud("post", parametros, this.url, "Hotel Guardado");
+      // Enviar la solicitud
+      //      58                98
+      if (numHabitaciones <= conteoHabitaciones) {
+        enviarSolicitud("post", parametros, this.url, "Hotel Guardado");
+      } else {
+        show_alerta(
+          "Ha alcansado el limite de habitaciones a asignar en el hotel ."
+        );
+        return;
+      }
     },
   },
 };
