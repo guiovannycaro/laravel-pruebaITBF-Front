@@ -140,7 +140,11 @@
 </template>
 
 <script>
-import { show_alerta, actSolicitud } from "../../../../funciones.js";
+import {
+  show_alerta,
+  actSolicitud,
+  enviarSolicitud,
+} from "../../../../funciones.js";
 import axios from "axios";
 
 export default {
@@ -156,7 +160,7 @@ export default {
       ciudad: 0,
       numhabitaciones: "",
       estado: true,
-      url: "http://localhost:8000/api/hoteles",
+      url: "http://localhost:8000/api/hoteles/ActualizarHotel",
     };
   },
   mounted() {
@@ -181,8 +185,6 @@ export default {
     },
 
     getHotel(ids) {
-      var urlP = "http://localhost:8000/api/hoteles/BoscarById/" + ids;
-
       axios
         .get(`http://localhost:8000/api/hoteles/BoscarById/${ids}`)
         .then((response) => {
@@ -218,7 +220,7 @@ export default {
         show_alerta("Selecciona el estado", "warning", "estado");
       } else {
         const parametros = {
-          idhotel: this.id,
+          idhotel: this.$route.params.idhotel,
           nombre: this.nombre,
           codnifrfc: this.codigo,
           direccion: this.direccion,
@@ -228,17 +230,7 @@ export default {
           numhabitaciones: this.numhabitaciones,
         };
 
-        axios
-          .post(`${this.url}`, parametros)
-          .then((response) => {
-            const hotel = response.data[0];
-            console.log("Hotel actualizado:", hotel);
-            // Aquí puedes realizar alguna acción después de la respuesta
-          })
-          .catch((error) => {
-            console.error("Error al actualizar el hotel:", error);
-            // Manejar errores, si es necesario
-          });
+        enviarSolicitud("put", parametros, this.url, "Hotel Actualizado");
       }
     },
   },

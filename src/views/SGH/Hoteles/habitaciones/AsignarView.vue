@@ -215,16 +215,8 @@ export default {
 
       // Obtener y validar conteos antes de enviar
       const conteoHabitaciones = await this.contHabitaciones(this.hotel);
-      if (conteoHabitaciones === null) {
-        show_alerta("Error al obtener la cantidad de habitaciones.");
-        return;
-      }
 
       const numHabitaciones = await this.cantidadtHabit(this.hotel);
-      if (numHabitaciones === null) {
-        show_alerta("Error al obtener el conteo de acomodaciones.");
-        return;
-      }
 
       const parametros = {
         idhotel: this.hotel,

@@ -171,7 +171,7 @@ export default {
           this.direccion = hotel.direccion;
           this.telefono = hotel.telefono;
           this.ciudad = hotel.idciudad;
-
+          this.numhabitaciones = hotel.numhabitaciones;
           this.estado = hotel.is_activo;
         })
         .catch((error) => {
@@ -201,7 +201,8 @@ export default {
         .then((response) => {
           // Aquí puedes manejar la respuesta para obtener las habitaciones
           const habitacion = response.data[0];
-          this.numhabitaciones = habitacion.cantidad;
+
+          return habitacion.cantidad;
           // Supongo que la respuesta tiene las habitaciones
           // Esto solo es un ejemplo de cómo podrías manejarlas
         })
